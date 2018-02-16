@@ -71,10 +71,47 @@ setMethod("initialize", "door",  function(.Object, ...){
   }
   )
 
-new("door", chosenDoor=1,carDoor=2,switch=T,winner=F)
+# Create generic PlayGame
+setGeneric("PlayGame", function(object="door"){   
+  standardGeneric("PlayGame")
+  }
+  )
 
-
-
+# creates PlayGame method for class door 
+setMethod("PlayGame", "door",
+          function(object){
+            object@winner<-FALSE
+            object@carDoor<-sample(1:3,1)
+            firstChosenDoor<-sample(1:3,1)
+            if (object@switch==FALSE){
+              object@chosenDoor<-firstChosenDoor
+            }
+            if (object@switch==TRUE){
+              temp<-FALSE
+              openDoor<-0
+              while(temp==FALSE){
+                openDoor<-sample(1:3,1)
+                if ((openDoor!=object@carDoor)&(openDoor!=firstChosenDoor)){
+                  temp<-TRUE
+                }
+              }
+              if(openDoor==1){
+                choices<-c(2,3)
+              } else if (openDoor==2){
+                choices<-c(1,3)
+              } else if (openDoor==3){
+                choices<-c(1,2)
+              }
+              object@chosenDoor<-sample(choices,1)
+            }
+            if (object@chosenDoor==object@carDoor){
+              object@winner<-TRUE
+            } else {
+              object@winner<-FALSE
+            }
+            return(object@winner)
+          }
+          )
 
 
 
