@@ -4,6 +4,7 @@
 
 
 # Part 1: Getting started 
+
 # The given code for myFunction needs to be debugged and improved.
 # The function should return a TRUE if these samples are equal and a false if they are not.
 # It appears that the function is always returning TRUE. 
@@ -28,5 +29,54 @@ compareDoors<-function(doorChoice, doorCar){
   } 
   return(isSame)
 }
+# To test function, 
 compareDoors(1,1)   # returns TRUE
 compareDoors(1,2)   # returns FALSE 
+
+
+
+# Part 2: Moving On
+# Define a new S4 class door. 
+setClass(Class="door",
+         representation = representation (
+           chosenDoor="numeric",
+           carDoor="numeric",
+           switch="logical",
+           winner="logical"
+           ), 
+         prototype = prototype (
+           chosenDoor=c(),
+           carDoor=c(),
+           switch=c(),
+           winner=c()
+           )
+         )
+
+# A validation function that checks whether values stored in the slots are appropriately structured. 
+setValidity("door", function(object){
+  test1<-(object@chosenDoor==1 | object@chosenDoor==2 | object@chosenDoor==3)
+  test2<-(object@carDoor==1 | object@carDoor==2 | object@carDoor==3)
+  test3<-(object@switch==TRUE | object@switch==FALSE)
+  test4<-(object@winner==TRUE | object@winner==FALSE)
+  test<-(test1==TRUE & test2==TRUE & test3==TRUE & test4==TRUE)
+  if(test!=TRUE){return("@DoorChoice is not a valid value")}
+  }
+  )
+
+# A construction function that allows the user to create a door object
+setMethod("initialize", "door",  function(.Object, ...){
+  value = callNextMethod()
+  validObject(value)
+  return(value)
+  }
+  )
+
+new("door", chosenDoor=1,carDoor=2,switch=T,winner=F)
+
+
+
+
+
+
+
+
