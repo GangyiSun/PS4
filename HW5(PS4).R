@@ -41,14 +41,12 @@ setClass(Class="door",
          representation = representation (
            chosenDoor="numeric",
            carDoor="numeric",
-           switch="logical",
-           winner="logical"
+           switch="logical"
            ), 
          prototype = prototype (
            chosenDoor=c(),
            carDoor=c(),
-           switch=c(),
-           winner=c()
+           switch=c()
            )
          )
 
@@ -57,8 +55,7 @@ setValidity("door", function(object){
   test1<-(object@chosenDoor==1 | object@chosenDoor==2 | object@chosenDoor==3)
   test2<-(object@carDoor==1 | object@carDoor==2 | object@carDoor==3)
   test3<-(object@switch==TRUE | object@switch==FALSE)
-  test4<-(object@winner==TRUE | object@winner==FALSE)
-  test<-(test1==TRUE & test2==TRUE & test3==TRUE & test4==TRUE)
+  test<-(test1==TRUE & test2==TRUE & test3==TRUE)
   if(test!=TRUE){return("@DoorChoice is not a valid value")}
   }
   )
@@ -80,7 +77,7 @@ setGeneric("PlayGame", function(object="door"){
 # creates PlayGame method for class door 
 setMethod("PlayGame", "door",
           function(object){
-            object@winner<-FALSE
+            winner<-FALSE
             object@carDoor<-sample(1:3,1)
             firstChosenDoor<-sample(1:3,1)
             if (object@switch==FALSE){
@@ -105,13 +102,37 @@ setMethod("PlayGame", "door",
               object@chosenDoor<-sample(choices,1)
             }
             if (object@chosenDoor==object@carDoor){
-              object@winner<-TRUE
+              winner<-TRUE
             } else {
-              object@winner<-FALSE
+              winner<-FALSE
             }
-            return(object@winner)
+            return(winner)
           }
           )
+
+
+# Part 3: Simulation
+# 1) Simulate 1000 rounds of the game, player does not switch 
+noSwitch<-c()
+for (i in 1:1000){
+  p1<-new("door", chosenDoor=1,carDoor=1,switch=F)
+  result<-PlayGame(p1)
+  noSwitch<-c(noSwitch,result)
+}
+table(noSwitch)
+
+# 2) simulate 1000 rounds of the game, player does switches 
+yesSwitch<-c()
+for (i in 1:1000){
+  p1<-new("door", chosenDoor=1,carDoor=1,switch=T)
+  result<-PlayGame(p1)
+  yesSwitch<-c(yesSwitch,result)
+}
+table(yesSwitch)
+
+# 3) Which strategy is better? 
+# switching is better 
+
 
 
 
