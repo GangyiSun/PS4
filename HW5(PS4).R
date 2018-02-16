@@ -113,21 +113,21 @@ setMethod("PlayGame", "door",
 
 # Part 3: Simulation
 # 1) Simulate 1000 rounds of the game, player does not switch 
-noSwitch<-c()
-for (i in 1:1000){
+PlayNoSwitch<-function(i){
   p1<-new("door", chosenDoor=1,carDoor=1,switch=F)
   result<-PlayGame(p1)
-  noSwitch<-c(noSwitch,result)
+  return(result)
 }
+noSwitch<-sapply(c(1:1000),PlayNoSwitch)
 table(noSwitch)
 
 # 2) simulate 1000 rounds of the game, player does switches 
-yesSwitch<-c()
-for (i in 1:1000){
+PlayYesSwitch<-function(i){
   p1<-new("door", chosenDoor=1,carDoor=1,switch=T)
   result<-PlayGame(p1)
-  yesSwitch<-c(yesSwitch,result)
+  return(result)
 }
+yesSwitch<-sapply(c(1:1000),PlayYesSwitch)
 table(yesSwitch)
 
 # 3) Which strategy is better? 
