@@ -119,7 +119,9 @@ PlayNoSwitch<-function(i){
   return(result)
 }
 noSwitch<-sapply(c(1:1000),PlayNoSwitch)
-table(noSwitch)
+tabNoSwitch<-table(noSwitch)
+perctWonNoSwitch<-tabNoSwitch[2]/1000*100
+paste("Player who chose not to switch won ", perctWonNoSwitch, "% of the time.")
 
 # 2) simulate 1000 rounds of the game, player does switches 
 PlayYesSwitch<-function(i){
@@ -128,10 +130,12 @@ PlayYesSwitch<-function(i){
   return(result)
 }
 yesSwitch<-sapply(c(1:1000),PlayYesSwitch)
-table(yesSwitch)
+tabYesSwitch<-table(yesSwitch)
+perctWonYesSwitch<-tabYesSwitch[2]/1000*100
+paste("Player who chose to switch won ", perctWonYesSwitch, "% of the time.")
 
 # 3) Which strategy is better? 
-# switching is better 
+# switching is better. compare percentage won. 
 
 
 
