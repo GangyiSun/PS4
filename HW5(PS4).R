@@ -6,7 +6,7 @@
 # Part 1: Getting started 
 
 # The given code for myFunction needs to be debugged and improved.
-# The function should return a TRUE if these samples are equal and a false if they are not.
+# The function should return a TRUE if these samples are equal and a FALSE if they are not.
 # It appears that the function is always returning TRUE. 
 # It seems like the assignment in line 9 causes doorthing1 and doorthing2 to have the same integer value. 
 # use debug() to check this and debug 
@@ -21,7 +21,7 @@
 # We now improve the naming convention, identing and commenting on the function. The improved function is as follows: 
 
 # The function compareDoors takes 2 door choices (represented as integers) as input, doorChoice and doorCar.
-# if doorChoice is equal to doorCar, the function returns TRUE. if they're not equal, function returns false. 
+# if doorChoice is equal to doorCar, the function returns TRUE. if they're not equal, function returns FALSE 
 compareDoors<-function(doorChoice, doorCar){
   isSame<-FALSE
   if (doorChoice==doorCar){ 
@@ -36,7 +36,11 @@ compareDoors(1,2)   # returns FALSE
 
 
 # Part 2: Moving On
+
 # Define a new S4 class door. 
+# Objects of class door contains an integer called chosenDoor (door chosen by the player), an integer called 
+# carDoor (door behind which a car is located), and a logical called switch (indiciating whether the player wants
+# to switch doors).
 setClass(Class="door",
          representation = representation (
            chosenDoor="numeric",
@@ -51,6 +55,8 @@ setClass(Class="door",
          )
 
 # A validation function that checks whether values stored in the slots are appropriately structured. 
+# The validation function ensures that the values stored in chosenDoor and carDoor are either 1, 2 or 3, and that
+# the value stored in switch is either TRUE or FALSE. 
 setValidity("door", function(object){
   test1<-(object@chosenDoor==1 | object@chosenDoor==2 | object@chosenDoor==3)
   test2<-(object@carDoor==1 | object@carDoor==2 | object@carDoor==3)
@@ -74,22 +80,27 @@ setGeneric("PlayGame", function(object="door"){
   }
   )
 
-# creates PlayGame method for class door 
+# creates PlayGame method for class door.
+# The method PlayGame takes as input an object door of class door, and returns winner, a boolean indicating 
+# whether or not the door that was finally chosen was the same as the door where the car is. 
 setMethod("PlayGame", "door",
           function(object){
-            winner<-FALSE
-            object@carDoor<-sample(1:3,1)
-            firstChosenDoor<-sample(1:3,1)
-            if (object@switch==FALSE){
+            winner<-FALSE                   # sets winner to FALSE to begin with 
+            object@carDoor<-sample(1:3,1)   # for the purposes of the simulation, randomly choose carDoor
+            firstChosenDoor<-sample(1:3,1)  # for the purposes of the simulation, randomly choose first door player
+                                            # chooses, firstChosenDoor
+            if (object@switch==FALSE){      # if player doesn't switch, her chosenDoor is firstChosenDoor
               object@chosenDoor<-firstChosenDoor
             }
-            if (object@switch==TRUE){
+            if (object@switch==TRUE){       # if player switches, 
               temp<-FALSE
               openDoor<-0
-              while(temp==FALSE){
-                openDoor<-sample(1:3,1)
-                if ((openDoor!=object@carDoor)&(openDoor!=firstChosenDoor)){
-                  temp<-TRUE
+              while(temp==FALSE){ 
+                openDoor<-sample(1:3,1)     # randomly choose a door to remove from consideration
+                if ((openDoor!=object@carDoor)&(openDoor!=firstChosenDoor)){    # this door to be removed cannot 
+                                                                                # contain the car, and cannot be
+                                                                                # firstChosenDoor
+                  temp<-TRUE                  
                 }
               }
               if(openDoor==1){
@@ -99,11 +110,12 @@ setMethod("PlayGame", "door",
               } else if (openDoor==3){
                 choices<-c(1,2)
               }
-              object@chosenDoor<-sample(choices,1)
+              object@chosenDoor<-sample(choices,1)    # The player randomly chooses between doors not removed. 
             }
-            if (object@chosenDoor==object@carDoor){
+            if (object@chosenDoor==object@carDoor){   # Compare chosenDoor and carDoor. If they are the same, 
+                                                      # assign TRUE to winner
               winner<-TRUE
-            } else {
+            } else {                                  # If they are not the same, assign FALSE to winner. 
               winner<-FALSE
             }
             return(winner)
@@ -112,33 +124,34 @@ setMethod("PlayGame", "door",
 
 
 # Part 3: Simulation
+
 # 1) Simulate 1000 rounds of the game, player does not switch 
+# Function PayNoSwitch takes in argument i. The function runs the playGame method i times with switch==FALSE.
+# It returns result of playGame (TRUE if car behind final door chosen, FALSE if car not behind final door chosen). 
 PlayNoSwitch<-function(i){
   p1<-new("door", chosenDoor=1,carDoor=1,switch=F)
   result<-PlayGame(p1)
   return(result)
 }
-noSwitch<-sapply(c(1:1000),PlayNoSwitch)
-tabNoSwitch<-table(noSwitch)
-perctWonNoSwitch<-tabNoSwitch[2]/1000*100
-paste("Player who chose not to switch won ", perctWonNoSwitch, "% of the time.")
+noSwitch<-sapply(c(1:1000),PlayNoSwitch)      # simulates the game 1,000 times, player does not switch.
+tabNoSwitch<-table(noSwitch)                  # tabulates results. 
+perctWonNoSwitch<-tabNoSwitch[2]/1000*100     # calculates percentage of the time they win the car. 
+paste("Player who chose not to switch won ", perctWonNoSwitch, "% of the time.")    # reports percentage won. 
 
 # 2) simulate 1000 rounds of the game, player does switches 
+# Function PayYesSwitch takes in argument i. The function runs the playGame method i times with switch==TRUE
+# It returns result of playGame (TRUE if car behind final door chosen, FALSE if car not behind final door chosen). 
 PlayYesSwitch<-function(i){
   p1<-new("door", chosenDoor=1,carDoor=1,switch=T)
   result<-PlayGame(p1)
   return(result)
 }
-yesSwitch<-sapply(c(1:1000),PlayYesSwitch)
-tabYesSwitch<-table(yesSwitch)
-perctWonYesSwitch<-tabYesSwitch[2]/1000*100
-paste("Player who chose to switch won ", perctWonYesSwitch, "% of the time.")
+yesSwitch<-sapply(c(1:1000),PlayYesSwitch)    # simulates the game 1,000 times, player does not switch.
+tabYesSwitch<-table(yesSwitch)                # tabulates results. 
+perctWonYesSwitch<-tabYesSwitch[2]/1000*100   # calculates percentage of the time they win the car. 
+paste("Player who chose to switch won ", perctWonYesSwitch, "% of the time.")       # reports percentage won. 
 
 # 3) Which strategy is better? 
-# switching is better. compare percentage won. 
-
-
-
-
-
+# Switching is better, because if the player doesn't switch, she wins apprx. 33% of the time. However, by switching, 
+# she can increase her chances of winning to 50%. 
 
